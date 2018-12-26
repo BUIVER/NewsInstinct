@@ -1,0 +1,47 @@
+
+func getData() -> (parsedData: [NSDictionary] ,dataAmount: Int)
+{
+
+
+
+var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
+var pListData: [NSDictionary] = []
+let pListPath = Bundle.main.path(forResource: "Data", ofType: "plist")
+let pListXMLfile = FileManager.default.contents(atPath: pListPath!)
+do{
+pListData = try PropertyListSerialization.propertyList(from: pListXMLfile!, options: .mutableContainers, format: &propertyListFormat) as! [NSDictionary]
+
+} catch {
+print("Error reading plist: \(error), format: \(propertyListFormat)")
+}
+
+//debugPrint(pListData.description)
+return (pListData, pListData.count)
+}
+
+/*  func fillData(index: Int) -> (key: String, value: String, images: UIImage)
+{
+
+var key: String = ""
+var value: String = ""
+var images: UIImage = UIImage()
+let properties = getData().parsedData
+
+var array : [String] = Array(properties[index].allKeys) as! [String]
+for arrayIndex in 0..<array.count
+{
+switch array[arrayIndex]
+{
+case "title" : key = properties[index].value(forKey: array[arrayIndex]) as? String ?? ""; break
+case "subtitle" : value = properties[index].value(forKey: array[arrayIndex]) as? String ?? ""; break
+case "image_name" : images = UIImage(named: properties[index].value(forKey: array[arrayIndex]) as! String)!; break
+
+default: break
+
+}
+
+}
+return (key, value, images)
+}
+
+*/
