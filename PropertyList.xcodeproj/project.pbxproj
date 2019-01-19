@@ -12,12 +12,14 @@
 		4B06B1EB21BAC62B00EC13D9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B06B1E921BAC62B00EC13D9 /* Main.storyboard */; };
 		4B06B1ED21BAC62D00EC13D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4B06B1EC21BAC62D00EC13D9 /* Assets.xcassets */; };
 		4B06B1F021BAC62D00EC13D9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B06B1EE21BAC62D00EC13D9 /* LaunchScreen.storyboard */; };
-		4B06B1FA21BB109700EC13D9 /* Data.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4B06B1F921BB109700EC13D9 /* Data.plist */; };
 		4B06B1FC21C2601500EC13D9 /* NewsTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B06B1FB21C2601500EC13D9 /* NewsTableCell.swift */; };
 		4B06B1FE21C2716000EC13D9 /* DataLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B06B1FD21C2716000EC13D9 /* DataLoad.swift */; };
 		4B06B20021C6B6E200EC13D9 /* DataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B06B1FF21C6B6E100EC13D9 /* DataStructure.swift */; };
 		4B06B22821CCED7F00EC13D9 /* PropertyListDataUpload in Resources */ = {isa = PBXBuildFile; fileRef = 4B06B22721CCED7F00EC13D9 /* PropertyListDataUpload */; };
-		4B3D9C3321D1294B007DA635 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D9C3121D1294B007DA635 /* DataModel.xcdatamodeld */; };
+		4B42680B21DDFCF000654393 /* News+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B42680921DDFCF000654393 /* News+CoreDataClass.swift */; };
+		4B42680C21DDFCF000654393 /* News+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B42680A21DDFCF000654393 /* News+CoreDataProperties.swift */; };
+		4B42680D21DDFD1600654393 /* DataModel.xcdatamodeld in Resources */ = {isa = PBXBuildFile; fileRef = 4B3D9C3121D1294B007DA635 /* DataModel.xcdatamodeld */; };
+		4BBDA0D421DCEDE200AEFB1D /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBDA0D321DCEDE200AEFB1D /* DataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,12 +30,14 @@
 		4B06B1EC21BAC62D00EC13D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4B06B1EF21BAC62D00EC13D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4B06B1F121BAC62D00EC13D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4B06B1F921BB109700EC13D9 /* Data.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Data.plist; sourceTree = "<group>"; };
 		4B06B1FB21C2601500EC13D9 /* NewsTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsTableCell.swift; sourceTree = "<group>"; };
 		4B06B1FD21C2716000EC13D9 /* DataLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoad.swift; sourceTree = "<group>"; };
 		4B06B1FF21C6B6E100EC13D9 /* DataStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructure.swift; sourceTree = "<group>"; };
 		4B06B22721CCED7F00EC13D9 /* PropertyListDataUpload */ = {isa = PBXFileReference; lastKnownFileType = text; path = PropertyListDataUpload; sourceTree = "<group>"; };
 		4B3D9C3221D1294B007DA635 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		4B42680921DDFCF000654393 /* News+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "News+CoreDataClass.swift"; sourceTree = "<group>"; };
+		4B42680A21DDFCF000654393 /* News+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "News+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4BBDA0D321DCEDE200AEFB1D /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,17 +71,19 @@
 			isa = PBXGroup;
 			children = (
 				4B06B1E521BAC62B00EC13D9 /* AppDelegate.swift */,
+				4B42680921DDFCF000654393 /* News+CoreDataClass.swift */,
+				4B42680A21DDFCF000654393 /* News+CoreDataProperties.swift */,
 				4B06B1E721BAC62B00EC13D9 /* ViewController.swift */,
 				4B06B22721CCED7F00EC13D9 /* PropertyListDataUpload */,
 				4B3D9C3121D1294B007DA635 /* DataModel.xcdatamodeld */,
 				4B06B1FD21C2716000EC13D9 /* DataLoad.swift */,
 				4B06B1FF21C6B6E100EC13D9 /* DataStructure.swift */,
 				4B06B1FB21C2601500EC13D9 /* NewsTableCell.swift */,
+				4BBDA0D321DCEDE200AEFB1D /* DataManager.swift */,
 				4B06B1E921BAC62B00EC13D9 /* Main.storyboard */,
 				4B06B1EC21BAC62D00EC13D9 /* Assets.xcassets */,
 				4B06B1EE21BAC62D00EC13D9 /* LaunchScreen.storyboard */,
 				4B06B1F121BAC62D00EC13D9 /* Info.plist */,
-				4B06B1F921BB109700EC13D9 /* Data.plist */,
 			);
 			path = PropertyList;
 			sourceTree = "<group>";
@@ -114,6 +120,11 @@
 				TargetAttributes = {
 					4B06B1E121BAC62B00EC13D9 = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -140,9 +151,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B42680D21DDFD1600654393 /* DataModel.xcdatamodeld in Resources */,
 				4B06B1F021BAC62D00EC13D9 /* LaunchScreen.storyboard in Resources */,
 				4B06B1ED21BAC62D00EC13D9 /* Assets.xcassets in Resources */,
-				4B06B1FA21BB109700EC13D9 /* Data.plist in Resources */,
 				4B06B1EB21BAC62B00EC13D9 /* Main.storyboard in Resources */,
 				4B06B22821CCED7F00EC13D9 /* PropertyListDataUpload in Resources */,
 			);
@@ -156,10 +167,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B06B1E821BAC62B00EC13D9 /* ViewController.swift in Sources */,
+				4B42680B21DDFCF000654393 /* News+CoreDataClass.swift in Sources */,
 				4B06B1E621BAC62B00EC13D9 /* AppDelegate.swift in Sources */,
 				4B06B20021C6B6E200EC13D9 /* DataStructure.swift in Sources */,
-				4B3D9C3321D1294B007DA635 /* DataModel.xcdatamodeld in Sources */,
 				4B06B1FE21C2716000EC13D9 /* DataLoad.swift in Sources */,
+				4B42680C21DDFCF000654393 /* News+CoreDataProperties.swift in Sources */,
+				4BBDA0D421DCEDE200AEFB1D /* DataManager.swift in Sources */,
 				4B06B1FC21C2601500EC13D9 /* NewsTableCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

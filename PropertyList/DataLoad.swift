@@ -7,17 +7,12 @@
 //
 
 import UIKit
-
-//protocol DataLoadDelegate: class {
-//    func loadCompleted(data: [DataStructure])
-//    func imageLoadCompleted(Image: UIImage, index: Int)
-//}
+import CoreData
 
 class DataLoad
 {
     let urlSession = URLSession()
     let imageSession = URLSession.shared
-//    weak var delegate: DataLoadDelegate!
     var loadedImages : [URL:UIImage?] = [:]
 
     func DataLoad(view: ViewController)
@@ -59,7 +54,7 @@ class DataLoad
                     DispatchQueue.main.async {
                         view.loadCompleted(data: fullLoadedData)
                     }
-                    debugPrint(fullLoadedData)
+             
                     
                 }
             
@@ -68,7 +63,7 @@ class DataLoad
             }
         
         })
-        //debugPrint(type(of: task))
+       
         task.resume()
        
         
@@ -79,10 +74,6 @@ class DataLoad
     func loadImage(url: URL, index: Int, view: ViewController)
         
     {
-        
-        
-
-        
         if let value = loadedImages[url]  {
             if let gottenImage = value {
                 DispatchQueue.main.async {
@@ -107,16 +98,40 @@ class DataLoad
                 return
             }
             
-            let gottenImage = UIImage(data: data) as! UIImage
+            let gottenImage = UIImage(data: data)
             self?.loadedImages.updateValue(gottenImage, forKey: url)
             DispatchQueue.main.async {
-                view?.imageLoadCompleted(Image: gottenImage, index: index)
+                view?.imageLoadCompleted(Image: gottenImage!, index: index)
             }
             
         })
         imageDownloadTask.resume()
         
     }
+    func localStorageSave(data: DataStructure, image: UIImage){
+        var managedObject : [News] = []
+            let emptyElement = News()
+    
+        emptyElement.image_ref = image.pngData() as NSData?
+//        UIImage.init(data: emptyElement.image_ref! as Data)
+            emptyElement.subtitle = data.subtitle
+            emptyElement.title = data.title
+            managedObject.append(emptyElement)
+        CoreDataManager.instance.saveContext()
+        
+    }
+    func localStorageLoad()
+    {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
+        do {
+            let results = try CoreDataManager.instance.managedObjectContext.fetch(fetchRequest)
+            for result in results as! [News] {
+                debugPrint("name - \(result.title!)")
+            }
+        } catch {
+            print(error)
+        }
+
+    }
     
 }
-//[DataStructure]

@@ -70,6 +70,10 @@ extension ViewController /*: DataLoadDelegate*/ {
         
         if let cell = self.table.cellForRow(at: IndexPath(row: index, section: 0)) as? PrototypeCell {
             cell.images.image = Image
+            
+            
+            load.localStorageSave(data: loadedData[index], image: Image)
+            load.localStorageLoad()
         }
     }
    

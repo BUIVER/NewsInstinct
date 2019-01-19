@@ -1,0 +1,14 @@
+version: "Apple Swift version 4.2.1 (swiftlang-1000.11.42 clang-1000.11.45.1)"
+options: "8b1cf9769df4d1ae8d889c094ec0db53"
+build_time: [1546435362, 804726000]
+inputs:
+  "/Users/buiver/Desktop/PropertyList/PropertyList/ViewController.swift": [1546433280, 0]
+  "/Users/buiver/Desktop/PropertyList/PropertyList/AppDelegate.swift": [1545388363, 0]
+  "/Users/buiver/Desktop/PropertyList/PropertyList/DataStructure.swift": [1545382225, 0]
+  "/Users/buiver/Desktop/PropertyList/PropertyList/DataLoad.swift": [1546433880, 0]
+  "/Users/buiver/Desktop/PropertyList/PropertyList/DataManager.swift": [1546435359, 0]
+  "/Users/buiver/Desktop/PropertyList/PropertyList/DataBase.swift": [1546435357, 0]
+  "/Users/buiver/Desktop/PropertyList/PropertyList/NewsTableCell.swift": [1544693936, 0]
+  "/Users/buiver/Desktop/PropertyList/DerivedData/PropertyList/Build/Intermediates.noindex/PropertyList.build/Debug-iphonesimulator/PropertyList.build/DerivedSources/CoreDataGenerated/DataModel/DataBase+CoreDataClass.swift": [1546434879, 0]
+  "/Users/buiver/Desktop/PropertyList/DerivedData/PropertyList/Build/Intermediates.noindex/PropertyList.build/Debug-iphonesimulator/PropertyList.build/DerivedSources/CoreDataGenerated/DataModel/DataBase+CoreDataProperties.swift": [1546434879, 0]
+  "/Users/buiver/Desktop/PropertyList/DerivedData/PropertyList/Build/Intermediates.noindex/PropertyList.build/Debug-iphonesimulator/PropertyList.build/DerivedSources/CoreDataGenerated/DataModel/DataModel+CoreDataModel.swift": [1546434879, 0]
