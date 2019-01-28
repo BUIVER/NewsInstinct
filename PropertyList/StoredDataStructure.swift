@@ -8,8 +8,9 @@
 
 import UIKit
 
-struct DataStructure {
-    var image_ref: String
+struct StoredDataStructure {
+    var image: NSData
+    var id: Int32
     var subtitle: String
     var title: String
 }

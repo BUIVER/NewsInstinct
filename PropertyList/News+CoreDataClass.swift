@@ -2,7 +2,7 @@
 //  News+CoreDataClass.swift
 //  PropertyList
 //
-//  Created by Ivan Ermak on 1/3/19.
+//  Created by Ivan Ermak on 1/26/19.
 //  Copyright © 2019 Ivan Ermak. All rights reserved.
 //
 //

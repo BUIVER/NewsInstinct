@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PrototypeCell : UITableViewCell
+class NewsPrototypeCell : UITableViewCell
 {
     @IBOutlet weak var key: UILabel!
     @IBOutlet weak var value: UITextView!
