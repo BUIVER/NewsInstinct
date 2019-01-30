@@ -16,8 +16,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     let localLoad = CacheLoad()
     var loadedImages : [UIImage] = []
     var check: Bool = false
-    var cachedData: [StoredDataStructure]!
-    var loadedData : [UploadDataStructure]!
+    var cachedData: [DataStructure]!
+    var loadedData : [DataStructure]!
     var idList: [Int32]!
     @IBOutlet weak var table: UITableView!
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -33,9 +33,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @IBAction func reload(_ sender: Any) {
         if (cachedData != nil){
-            self.syncActivityIndicator.isHidden = false
+            self.syncActivityIndicator.startAnimating()
             
         localLoad.localStorageSyncStarts(data: cachedData)
+            table.isHidden = true
         cachedData = nil
              networkLoad.dataDownload(view: self)
             check = false
@@ -48,9 +49,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
        
         let cell = tableView.dequeueReusableCell(withIdentifier: "PropertyTableViewCell", for: indexPath) as! NewsPrototypeCell
 
-        
-        
-        
         if (check)
         {
             cell.key.text = cachedData[indexPath.row].title
@@ -81,7 +79,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 }
 
 extension ViewController /*: DataLoadDelegate*/ {
-    func loadCompleted(data: [UploadDataStructure]) {
+    func loadCompleted(data: [DataStructure]) {
         self.loadedData = data
         for _ in 0..<loadedData.count
         {
@@ -98,7 +96,8 @@ extension ViewController /*: DataLoadDelegate*/ {
         if let cell = self.table.cellForRow(at: IndexPath(row: index, section: 0)) as? NewsPrototypeCell {
             cell.images.image = Image
             localLoad.localStorageSave(data: loadedData[index], image: Image)
-            self.syncActivityIndicator.isHidden = true
+            self.syncActivityIndicator.stopAnimating()
+            self.table.isHidden = false
           
         }
     }

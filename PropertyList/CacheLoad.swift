@@ -27,14 +27,15 @@ class CacheLoad
         
     }
     
-    func localStorageSave(data: UploadDataStructure, image: UIImage){
+    func localStorageSave(data: DataStructure, image: UIImage){
       //  var managedObject : [News] = []
         let emptyElement = News()
         
-        emptyElement.image_ref = image.pngData() as NSData?
+        emptyElement.image = image.pngData() as NSData?
         emptyElement.id = Int32(data.id)
         emptyElement.subtitle = data.subtitle
         emptyElement.title = data.title
+        emptyElement.imageUrl = data.image_ref
         
        // managedObject.append(emptyElement)
         CoreDataManager.instance.saveContext()
@@ -42,7 +43,7 @@ class CacheLoad
     }
     
     
-    func localStorageSyncStarts(data: [StoredDataStructure]){
+    func localStorageSyncStarts(data: [DataStructure]){
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do
@@ -53,9 +54,9 @@ class CacheLoad
        // CoreDataManager.instance.saveContext()
         
     }
-    func localStorageLoad() -> [StoredDataStructure]
+    func localStorageLoad() -> [DataStructure]
     {
-        var fetchedData: [StoredDataStructure] = []
+        var fetchedData: [DataStructure] = []
         var idList: [Int32] = []
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
         do {
@@ -63,7 +64,7 @@ class CacheLoad
             for result in results as! [News] {
                 idList.append(result.id)
                 
-                let emptyElement = StoredDataStructure(image: result.image_ref ?? NSData(), id: result.id, subtitle: result.subtitle ?? "", title: result.title ?? "")
+                let emptyElement = DataStructure(image_ref: result.imageUrl ?? "", id: result.id, subtitle: result.subtitle ?? "", title: result.title ?? "", image: result.image ?? NSData())
                 fetchedData.append(emptyElement)
                 
                 

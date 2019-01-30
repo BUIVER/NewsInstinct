@@ -8,9 +8,10 @@
 
 import Foundation
 
-struct UploadDataStructure {
+struct DataStructure {
     var image_ref: String
     var id: Int32
     var subtitle: String
     var title: String
+    var image: NSData
 }
