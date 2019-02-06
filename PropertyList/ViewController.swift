@@ -6,100 +6,143 @@
 //  Copyright © 2018 Ivan Ermak. All rights reserved.
 //
 
-import UIKit
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+import UIKit
+import CoreData
+
+protocol ImageLoader {
+    func loadImage(url: URL, index: Int)
+}
+
+class ViewController: UIViewController, UITableViewDelegate{
     
     @IBOutlet weak var syncActivityIndicator: UIActivityIndicatorView!
     
-    let networkLoad = NetworkLoad()
-    let localLoad = CacheLoad()
-    var loadedImages : [UIImage] = []
-    var check: Bool = false
-    var cachedData: [DataStructure]!
-    var loadedData : [DataStructure]!
+    var imageLoader: ImageLoader!
+    
+    var localLoad: CacheLoad!
     var idList: [Int32]!
     @IBOutlet weak var table: UITableView!
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if (cachedData != nil)
-        {
-            check = true
-            return cachedData.count
-        }
-        else{
-            return loadedData?.count ?? 0}
-    }
-    
     @IBAction func reload(_ sender: Any) {
-        if (cachedData != nil){
-            self.syncActivityIndicator.startAnimating()
-            
-        localLoad.localStorageSyncStarts(data: cachedData)
-            table.isHidden = true
-        cachedData = nil
-             networkLoad.dataDownload(view: self)
-            check = false
-        }
-        table.reloadData()
-        
-       
+       // table.isHidden = true
+        self.syncActivityIndicator.startAnimating()
+        localLoad.startSync()
+//        table.reloadData()
     }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       
-        let cell = tableView.dequeueReusableCell(withIdentifier: "PropertyTableViewCell", for: indexPath) as! NewsPrototypeCell
 
-        if (check)
-        {
-            cell.key.text = cachedData[indexPath.row].title
-            cell.value.text = cachedData[indexPath.row].subtitle
-            cell.images.image = UIImage(data: cachedData[indexPath.row].image as Data) ?? UIImage()
-      
-        }
-        else {
-            cell.key.text = loadedData[indexPath.row].title
-            cell.value.text = loadedData[indexPath.row].subtitle
-             networkLoad.loadImage(url: URL(string: loadedData[indexPath.row].image_ref)!, index: indexPath.row, view: self)
-        }
-        return cell
-    }
-   
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        load.delegate = self
-        localLoad.DataLoad(view: self)
+        localLoad = CacheLoad(delegate: self)
+        localLoad.mainDelegate = self
+        localLoad.loadData()
+        
         table.dataSource = self
         table.delegate = self
-        self.syncActivityIndicator.isHidden = true
         // Do any additional setup after loading the view, typically from a nib.
     }
   
 }
 
-extension ViewController /*: DataLoadDelegate*/ {
-    func loadCompleted(data: [DataStructure]) {
-        self.loadedData = data
-        for _ in 0..<loadedData.count
-        {
-        self.loadedImages.append(UIImage())
-        }
-        self.table.reloadData()
+
+
+extension ViewController : CachedLoadDelegate
+{
+    func syncCompleted()
+    {
+        self.syncActivityIndicator.stopAnimating()
+//        table.reloadData()
+      //  table.isHidden = false
     }
     
-    func imageLoadCompleted(Image: UIImage, index: Int)
-    {
-        self.loadedImages[index] = Image
-//         self.table.reloadData()
+}
+
+
+extension ViewController : UITableViewDataSource
+{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if let cell = self.table.cellForRow(at: IndexPath(row: index, section: 0)) as? NewsPrototypeCell {
-            cell.images.image = Image
-            localLoad.localStorageSave(data: loadedData[index], image: Image)
-            self.syncActivityIndicator.stopAnimating()
-            self.table.isHidden = false
-          
+        guard let sections = self.localLoad.fetchedResultController.sections else { return 0}
+        return sections[section].numberOfObjects
+       
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+    
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PropertyTableViewCell", for: indexPath) as! NewsPrototypeCell
+        let data = self.localLoad.fetchedResultController.object(at: indexPath)
+        configureCell(cell: cell, data: data, index: indexPath.row)
+        return cell
+    }
+    
+    func configureCell(cell: NewsPrototypeCell, data: News, index: Int) {
+        
+        let cellValue = data
+        
+        cell.key.text = cellValue.title
+        cell.value.text = cellValue.subtitle
+
+        if let data = cellValue.image as Data?, let image = UIImage(data: data) {
+            cell.images.image = image
+        } else if let imageString = cellValue.imageUrl, let url = URL(string: imageString) {
+//            imageLoader.loadImage(url: url, index: index)
         }
     }
+}
+
+
+extension ViewController: NSFetchedResultsControllerDelegate {
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, sectionIndexTitleForSectionName sectionName: String) -> String? {
+        return sectionName
+    }
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        table.beginUpdates()
+    }
    
+    func controller(controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        switch type {
+        case .insert:
+            table.insertSections(NSIndexSet(index: sectionIndex) as IndexSet, with: .fade)
+        case .delete:
+            table.deleteSections(NSIndexSet(index: sectionIndex) as IndexSet, with: .fade)
+        default:
+            return
+        }
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch type {
+        case .insert:
+            if let indexPath = newIndexPath {
+                table.insertRows(at: [indexPath], with: .automatic)
+            }
+        case .update:
+            if let indexPath = indexPath {
+//                let news = fetchedResultController.object(at: indexPath) as! News
+//                guard let cell = table.cellForRow(at: indexPath) else { break }
+//                configureCell(cell: cell as! NewsPrototypeCell, data: news, index: indexPath.row)
+                table.reloadRows(at: [indexPath], with: .automatic)
+            }
+        case .move:
+            if let indexPath = indexPath {
+                table.deleteRows(at: [indexPath], with: .automatic)
+            }
+            if let newIndexPath = newIndexPath {
+                table.insertRows(at: [newIndexPath], with: .automatic)
+            }
+        case .delete:
+            if let indexPath = indexPath {
+                table.deleteRows(at: [indexPath], with: .automatic)
+            }
+        }
+    }
+  
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        table.endUpdates()
+    }
 }

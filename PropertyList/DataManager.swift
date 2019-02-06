@@ -62,4 +62,12 @@ class CoreDataManager{
             }
         }
     }
+    
+    func deleteObject(_ object: NSManagedObject) {
+        self.managedObjectContext.delete(object)
+    }
+    
+    func insertObject(_ object: NSManagedObject) {
+        self.managedObjectContext.insert(object)
+    }
 }
