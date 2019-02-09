@@ -10,24 +10,21 @@
 import UIKit
 import CoreData
 
-protocol ImageLoader {
-    func loadImage(url: URL, index: Int)
-}
 
 class ViewController: UIViewController, UITableViewDelegate{
     
     @IBOutlet weak var syncActivityIndicator: UIActivityIndicatorView!
     
-    var imageLoader: ImageLoader!
+   
     
     var localLoad: CacheLoad!
+    var networkLoad = NetworkLoad()
     var idList: [Int32]!
     @IBOutlet weak var table: UITableView!
     @IBAction func reload(_ sender: Any) {
-       // table.isHidden = true
+    
         self.syncActivityIndicator.startAnimating()
-        localLoad.startSync()
-//        table.reloadData()
+        networkLoad.dataDownload()
     }
 
     override func viewDidLoad() {
@@ -35,8 +32,8 @@ class ViewController: UIViewController, UITableViewDelegate{
         
         localLoad = CacheLoad(delegate: self)
         localLoad.mainDelegate = self
+        networkLoad.delegate = self
         localLoad.loadData()
-        
         table.dataSource = self
         table.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
@@ -51,9 +48,24 @@ extension ViewController : CachedLoadDelegate
     func syncCompleted()
     {
         self.syncActivityIndicator.stopAnimating()
-//        table.reloadData()
-      //  table.isHidden = false
     }
+    
+}
+
+extension ViewController: DataLoadDelegate
+{
+    func dataLoadCompleted(data: [DataStructure]) {
+        localLoad.startSync(data: data)
+    }
+    
+    func imageLoadCompleted(image: UIImage, index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        if let cell = table.cellForRow(at: indexPath) as? NewsTableCell{
+        cell.images.image = image
+        }
+        
+    }
+    
     
 }
 
@@ -71,23 +83,24 @@ extension ViewController : UITableViewDataSource
         
     
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "PropertyTableViewCell", for: indexPath) as! NewsPrototypeCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PropertyTableViewCell", for: indexPath) as! NewsTableCell
         let data = self.localLoad.fetchedResultController.object(at: indexPath)
         configureCell(cell: cell, data: data, index: indexPath.row)
         return cell
     }
     
-    func configureCell(cell: NewsPrototypeCell, data: News, index: Int) {
+    func configureCell(cell: NewsTableCell, data: News, index: Int) {
         
         let cellValue = data
         
         cell.key.text = cellValue.title
         cell.value.text = cellValue.subtitle
 
-        if let data = cellValue.image as Data?, let image = UIImage(data: data) {
-            cell.images.image = image
-        } else if let imageString = cellValue.imageUrl, let url = URL(string: imageString) {
-//            imageLoader.loadImage(url: url, index: index)
+//        if let data = cellValue.image as Data?, let image = UIImage(data: data) {
+//            cell.images.image = image
+//        } else
+            if let imageString = cellValue.imageUrl, let url = URL(string: imageString) {
+                networkLoad.loadImage(url: url, index: index)
         }
     }
 }
@@ -123,9 +136,6 @@ extension ViewController: NSFetchedResultsControllerDelegate {
             }
         case .update:
             if let indexPath = indexPath {
-//                let news = fetchedResultController.object(at: indexPath) as! News
-//                guard let cell = table.cellForRow(at: indexPath) else { break }
-//                configureCell(cell: cell as! NewsPrototypeCell, data: news, index: indexPath.row)
                 table.reloadRows(at: [indexPath], with: .automatic)
             }
         case .move:

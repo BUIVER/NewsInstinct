@@ -19,21 +19,14 @@ class NetworkLoad
     weak var delegate : DataLoadDelegate?
     let urlSession = URLSession()
     let imageSession = URLSession.shared
+    
+//    let cachedHandler = URLCache(memoryCapacity: 100 * 1024 * 1024, diskCapacity: 0, diskPath: nil)
     var loadedImages : [URL:UIImage?] = [:]
 
     
     func dataDownload()
     {
     
-//
-//        let element1: DataStructure = DataStructure.init(image_ref: "", id: 0, subtitle: "123", title: "1", image: NSData())
-//        let element2: DataStructure = DataStructure.init(image_ref: "", id: 1, subtitle: "124", title: "2", image: NSData())
-//        let element3: DataStructure = DataStructure.init(image_ref: "", id: 2, subtitle: "125", title: "3", image: NSData())
-//
-//
-//        self.delegate?.dataLoadCompleted(data: [element1, element2, element3])
-
-        
         
         let url = URL(string: "https://api.backendless.com/8FA06EE1-1C10-07F0-FF07-F05A0F78EA00/E2BC3E0D-149E-3D84-FF61-3CE7338E4700/data/table")
         
@@ -92,7 +85,7 @@ class NetworkLoad
     func loadImage(url: URL, index: Int)
        
     {
-        
+      
         if let value = loadedImages[url]  {
             if let gottenImage = value {
                 DispatchQueue.main.async {
@@ -120,10 +113,23 @@ class NetworkLoad
             let gottenImage = UIImage(data: data)
             self?.loadedImages.updateValue(gottenImage, forKey: url)
             DispatchQueue.main.async {
-                self!.delegate?.imageLoadCompleted(image: gottenImage!, index: index)
+                self?.delegate?.imageLoadCompleted(image: gottenImage!, index: index)
             }
             
         })
+        
+//        cachedHandler.getCachedResponse(for: imageDownloadTask, completionHandler: {[weak self] response in
+//            if let cachedResponse = response {
+//                self?.cachedHandler.storeCachedResponse(cachedResponse, for: imageDownloadTask)
+//            }
+//            if let imageData = response?.data, let gottenImage = UIImage(data: imageData) {
+//                self?.loadedImages.updateValue(gottenImage, forKey: url)
+//                DispatchQueue.main.async {
+//                    self?.delegate?.imageLoadCompleted(image: gottenImage, index: index)
+//                }
+//            }
+//        })
+        
         imageDownloadTask.resume()
         
     }

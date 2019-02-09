@@ -16,7 +16,6 @@ extension News {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<News> {
         return NSFetchRequest<News>(entityName: "News")
     }
-    @NSManaged public var image: NSData?
     @NSManaged public var imageUrl: String?
     @NSManaged public var subtitle: String?
     @NSManaged public var title: String?
