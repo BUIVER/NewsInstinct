@@ -70,4 +70,24 @@ class CoreDataManager{
     func insertObject(_ object: NSManagedObject) {
         self.managedObjectContext.insert(object)
     }
+    func updateObject(_ object: NSManagedObject, existID: NSManagedObjectID) {
+        let newDataId = object.objectID
+        debugPrint(newDataId)
+        do {
+            
+            let oldObject = try managedObjectContext.existingObject(with: newDataId)
+            oldObject.setValue(object.value(forKey: "id"), forKey: "id")
+            oldObject.setValue(object.value(forKey: "title"), forKey: "title")
+            oldObject.setValue(object.value(forKey: "subtitle"), forKey: "subtitle")
+            oldObject.setValue(object.value(forKey: "updateTime"), forKey: "updateTime")
+            oldObject.setValue(object.value(forKey: "imageUrl"), forKey: "imageUrl")
+            debugPrint(oldObject.objectID)
+            
+           
+        } catch {
+            let nserror = error as NSError
+            NSLog("error \(nserror), \(nserror.userInfo)")
+        }
+        
+    }
 }

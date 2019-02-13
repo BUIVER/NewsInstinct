@@ -19,6 +19,7 @@ extension News {
     @NSManaged public var imageUrl: String?
     @NSManaged public var subtitle: String?
     @NSManaged public var title: String?
-    @NSManaged public var id: Int32
+    @NSManaged public var id: String
+    @NSManaged public var updateTime: String?
 
 }

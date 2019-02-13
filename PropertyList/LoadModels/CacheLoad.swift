@@ -16,10 +16,10 @@ protocol CachedLoadDelegate: class {
 class CacheLoad
 {
     let fetchedResultController : NSFetchedResultsController<News>
-    var idList: Set<Int32> = []
+    var idList: Set<String> = []
     var mainDelegate: CachedLoadDelegate?
-    var cachedData: [Int32:DataStructure] = [:]
-    var serverData: [Int32:DataStructure] = [:]
+    var cachedData: [String:News] = [:]
+    var serverData: [String:News] = [:]
     
     init(delegate: NSFetchedResultsControllerDelegate) {
         let fetchRequest: NSFetchRequest<News> = News.fetchRequest()
@@ -41,27 +41,11 @@ class CacheLoad
         
     }
     
-    func saveToLocalStorage(data: DataStructure/*, image: UIImage*/) {
-      
-        let emptyElement = News()
-        
-        emptyElement.id = Int32(data.id)
-        emptyElement.subtitle = data.subtitle
-        emptyElement.title = data.title
-        emptyElement.imageUrl = data.image_ref
-        
-        
-        CoreDataManager.instance.insertObject(emptyElement)
-//        CoreDataManager.instance.saveContext()
-       
-    }
     
     
-    func startSync(data: [DataStructure]) {
-        
-        let arrayedLocalData = loadFromLocalStorage().data
+    func startSync(data: [News]) {
         let arrayedServerData = data
-        var serverIdList: Set<Int32> = []
+        var serverIdList: Set<String> = []
         for index in 0..<arrayedServerData.count
         {
             
@@ -70,78 +54,50 @@ class CacheLoad
             
             serverData.updateValue(appendedValue, forKey: arrayedServerData[index].id)
         }
-        
-        var toRemoveList = self.idList
-        
         var amountOfData = idList
         amountOfData.formUnion(serverIdList)
-        toRemoveList.subtract(serverIdList)
-        
-        let localIds = Array(cachedData.keys)
-        for index in 0..<amountOfData.count
-        {
-            if(index < localIds.count)
+        amountOfData.forEach({usedId in
+            if let serverMatch = serverData[usedId]
             {
                 
-                if(toRemoveList.contains(localIds[index]))
-                {
-                    let removedObject = structureToObject(data: cachedData[localIds[index]]!)
-                    
-                        CoreDataManager.instance.deleteObject(removedObject)
-                    
-                    cachedData.removeValue(forKey: localIds[index])
-                   
-                    
-                    
+                if let cachedMatch = cachedData[usedId] {
+                    cachedData.updateValue(serverMatch, forKey: usedId)
+                    CoreDataManager.instance.updateObject(serverMatch, existID: cachedMatch.objectID)
+                }
+                else {
+                    cachedData.updateValue(serverMatch, forKey: usedId)
+                    CoreDataManager.instance.insertObject(serverMatch)
                 }
             }
-            else if let value = serverData[Int32(index)]
+            else
             {
-                cachedData.updateValue(value, forKey: Int32(index))
+                if let cachedMatch = cachedData[usedId]{
+                    CoreDataManager.instance.deleteObject(cachedMatch)
+                    cachedData.removeValue(forKey: usedId)
+                }
             }
-        }
-        
-        cachedData.forEach({
-            self.saveToLocalStorage(data: $0.value)
+            
         })
-        
+      
         CoreDataManager.instance.saveContext()
+       
         
         mainDelegate?.syncCompleted()
     
     
-    
-        for index in 0..<arrayedLocalData.count
-        {
-            cachedData.updateValue(arrayedLocalData[index], forKey: arrayedLocalData[index].id)
-        }
-       
         
     }
-    func loadFromLocalStorage() -> (data: [DataStructure], idList: Set<Int32>)
+    func loadFromLocalStorage() -> (data: [News], idList: Set<String>)
     {
-        var fetchedData: [DataStructure] = []
-
         if let fetchedObjects = self.fetchedResultController.fetchedObjects {
             for result in fetchedObjects {
                 idList.insert(result.id)
-                let nsData = UIImage(imageLiteralResourceName: "amfora").pngData()
-                let emptyElement = DataStructure(image_ref: result.imageUrl ?? "", id: result.id, subtitle: result.subtitle ?? "", title: result.title ?? "", image: nsData! as NSData)
-                fetchedData.append(emptyElement)
-                
-                
+                cachedData.updateValue(result, forKey: result.id)
             }
+        
+        return (data: fetchedObjects, idList: idList)
         }
-        return (data: fetchedData, idList: idList)
-    }
-    func structureToObject(data: DataStructure) -> News
-    {
-        let resultValue = News()
-        resultValue.id = data.id
-        resultValue.imageUrl = data.image_ref
-        resultValue.subtitle = data.subtitle
-        resultValue.title = data.title
-        return resultValue
+        else {return (data: [], idList: idList)}
     }
 }
 

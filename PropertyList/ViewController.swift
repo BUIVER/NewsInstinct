@@ -54,7 +54,7 @@ extension ViewController : CachedLoadDelegate
 
 extension ViewController: DataLoadDelegate
 {
-    func dataLoadCompleted(data: [DataStructure]) {
+    func dataLoadCompleted(data: [News]) {
         localLoad.startSync(data: data)
     }
     

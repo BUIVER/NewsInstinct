@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 protocol DataLoadDelegate: class {
-    func dataLoadCompleted(data: [DataStructure])
+    func dataLoadCompleted(data: [News])
     func imageLoadCompleted(image: UIImage, index: Int)
 }
 
@@ -32,7 +32,7 @@ class NetworkLoad
         
         let request = URLRequest(url: url!)
         let session = URLSession.shared
-        var fullLoadedData = [DataStructure]()
+        var fullLoadedData = [News]()
         
         
         let task = session.dataTask(with: request, completionHandler: {data, response, error in
@@ -54,13 +54,22 @@ class NetworkLoad
                     for index in 0..<json.count
                     {
                         let cluster = json[index]
-                        let title = cluster.value(forKey: "title") as! String
-                        let subtitle = cluster.value(forKey: "subtitle") as! String
-                        let imageUrl = cluster.value(forKey: "image_ref") as! String
-                        let id = cluster.value(forKey: "ID") as! Int32
-                        let image = NSData()
-                        var partialData: DataStructure
-                        partialData = DataStructure(image_ref: imageUrl, id: id, subtitle: subtitle, title: title, image: image)
+                        let title = cluster.value(forKey: "title") as? String
+                        let subtitle = cluster.value(forKey: "subtitle") as? String
+                        let imageUrl = cluster.value(forKey: "image_ref") as? String
+                        let id = cluster.value(forKey: "objectId") as! String
+                    
+                       // debugPrint(type(of: cluster.value(forKey: "updated")))
+                     
+                        let updateTime = String(describing: cluster.value(forKey: "updated"))
+                    
+                        let partialData = News()
+                        partialData.title = title
+                        partialData.id = id
+                        partialData.imageUrl = imageUrl
+                        partialData.subtitle = subtitle
+                        partialData.updateTime = updateTime
+                       
                         fullLoadedData.append(partialData)
                         
                     }
