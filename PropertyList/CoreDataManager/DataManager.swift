@@ -11,7 +11,7 @@ import CoreData
 
 class CoreDataManager{
     static let instance = CoreDataManager()
-    
+    let fetchRequest: NSFetchRequest<News> = News.fetchRequest()
     private init() {}
     
     lazy var applicationDocumentsDirectory: NSURL = {
@@ -26,7 +26,7 @@ class CoreDataManager{
     
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let url = self.applicationDocumentsDirectory.appendingPathComponent("SingleViewCoreData.sqlite")
+        let url = self.applicationDocumentsDirectory.appendingPathComponent("DataModel.sql")
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
             try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
@@ -65,29 +65,39 @@ class CoreDataManager{
     
     func deleteObject(_ object: NSManagedObject) {
         self.managedObjectContext.delete(object)
+        saveContext()
+       
     }
     
     func insertObject(_ object: NSManagedObject) {
         self.managedObjectContext.insert(object)
+        saveContext()
+        
     }
     func updateObject(_ object: NSManagedObject, existID: NSManagedObjectID) {
-        let newDataId = object.objectID
-        debugPrint(newDataId)
+        if let newDataId = object.value(forKey: "id") as? String{
+        
         do {
-            
-            let oldObject = try managedObjectContext.existingObject(with: newDataId)
-            oldObject.setValue(object.value(forKey: "id"), forKey: "id")
-            oldObject.setValue(object.value(forKey: "title"), forKey: "title")
-            oldObject.setValue(object.value(forKey: "subtitle"), forKey: "subtitle")
-            oldObject.setValue(object.value(forKey: "updateTime"), forKey: "updateTime")
-            oldObject.setValue(object.value(forKey: "imageUrl"), forKey: "imageUrl")
-            debugPrint(oldObject.objectID)
-            
-           
+            let objectsSet = try managedObjectContext.fetch(fetchRequest)
+            var index = 0
+            while (newDataId != objectsSet[index].id)
+            {
+                debugPrint(objectsSet[index].objectID)
+                debugPrint("")
+                index += 1
+            }
+            objectsSet[index].setValue(object.value(forKey: "title"), forKey: "title")
+            objectsSet[index].setValue(object.value(forKey: "subtitle"), forKey: "subtitle")
+            objectsSet[index].setValue(object.value(forKey: "updateTime"), forKey: "updateTime")
+            objectsSet[index].setValue(object.value(forKey: "imageUrl"), forKey: "imageUrl")
+            debugPrint(objectsSet[index].objectID)
+            debugPrint(managedObjectContext.updatedObjects)
+            debugPrint(self.managedObjectContext.insertedObjects)
+            saveContext()
         } catch {
             let nserror = error as NSError
             NSLog("error \(nserror), \(nserror.userInfo)")
         }
-        
+        }
     }
 }

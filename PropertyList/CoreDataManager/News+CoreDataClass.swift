@@ -13,6 +13,10 @@ import CoreData
 @objc(News)
 public class News: NSManagedObject {
     convenience init() {
-        self.init(context: CoreDataManager.instance.managedObjectContext)
+        let entity = NSEntityDescription.entity(forEntityName: "News", in: CoreDataManager.instance.managedObjectContext)
+        self.init(entity: entity!, insertInto: nil)
+        
+      
     }
+  
 }

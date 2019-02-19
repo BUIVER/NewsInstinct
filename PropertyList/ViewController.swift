@@ -18,8 +18,12 @@ class ViewController: UIViewController, UITableViewDelegate{
    
     
     var localLoad: CacheLoad!
-    var networkLoad = NetworkLoad()
+    var networkLoad = LoadDataFromNetwork()
+    var loadImage: ImageLoader!
     var idList: [Int32]!
+    let cachedHandler = URLCache(memoryCapacity: 100 * 1024 * 1024, diskCapacity: 0, diskPath: nil)
+   
+    var dataTasksLists: [Int: URLSessionDataTask] = [:]
     @IBOutlet weak var table: UITableView!
     @IBAction func reload(_ sender: Any) {
     
@@ -29,8 +33,8 @@ class ViewController: UIViewController, UITableViewDelegate{
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         localLoad = CacheLoad(delegate: self)
+        loadImage = ImageLoader(cachedHandler: cachedHandler)
         localLoad.mainDelegate = self
         networkLoad.delegate = self
         localLoad.loadData()
@@ -55,20 +59,22 @@ extension ViewController : CachedLoadDelegate
 extension ViewController: DataLoadDelegate
 {
     func dataLoadCompleted(data: [News]) {
-        localLoad.startSync(data: data)
-    }
-    
-    func imageLoadCompleted(image: UIImage, index: Int) {
-        let indexPath = IndexPath(row: index, section: 0)
-        if let cell = table.cellForRow(at: indexPath) as? NewsTableCell{
-        cell.images.image = image
-        }
         
+        localLoad.startSync(data: data)
     }
     
     
 }
-
+extension ViewController: LoadImageDelegate
+{
+    func imageLoadCompleted(imageSession: URLSessionDataTask, index: Int) {
+        dataTasksLists.updateValue(imageSession, forKey: index)
+        let indexPath = IndexPath(row: index, section: 0)
+        table.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
+    
+}
 
 extension ViewController : UITableViewDataSource
 {
@@ -99,9 +105,16 @@ extension ViewController : UITableViewDataSource
 //        if let data = cellValue.image as Data?, let image = UIImage(data: data) {
 //            cell.images.image = image
 //        } else
-            if let imageString = cellValue.imageUrl, let url = URL(string: imageString) {
-                networkLoad.loadImage(url: url, index: index)
+     /*   if let dataTask = dataTasksLists[index]{
+        self.cachedHandler.getCachedResponse(for: dataTask, completionHandler: {response in
+            if let image = UIImage(data: response?.data as! Data){
+               cell.images.image = image
+            }
+            })
         }
+        else if let imageString = cellValue.imageUrl, let url = URL(string: imageString) {
+                loadImage.loadImage(url: url, index: index)
+        }*/
     }
 }
 

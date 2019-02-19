@@ -20,7 +20,6 @@ class CacheLoad
     var mainDelegate: CachedLoadDelegate?
     var cachedData: [String:News] = [:]
     var serverData: [String:News] = [:]
-    
     init(delegate: NSFetchedResultsControllerDelegate) {
         let fetchRequest: NSFetchRequest<News> = News.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
@@ -46,13 +45,23 @@ class CacheLoad
     func startSync(data: [News]) {
         let arrayedServerData = data
         var serverIdList: Set<String> = []
-        for index in 0..<arrayedServerData.count
+        let cahr = loadFromLocalStorage().data
+        
+       for index in 0..<cahr.count
+       {
+        let appendedValue = cahr[index]
+
+        
+        cachedData.updateValue(appendedValue, forKey: appendedValue.id)
+        }
+        
+       for index in 0..<arrayedServerData.count
         {
             
             let appendedValue = arrayedServerData[index]
             serverIdList.insert(appendedValue.id)
             
-            serverData.updateValue(appendedValue, forKey: arrayedServerData[index].id)
+            serverData.updateValue(appendedValue, forKey: appendedValue.id)
         }
         var amountOfData = idList
         amountOfData.formUnion(serverIdList)
@@ -60,9 +69,9 @@ class CacheLoad
             if let serverMatch = serverData[usedId]
             {
                 
-                if let cachedMatch = cachedData[usedId] {
+                if (cachedData[usedId] != nil) {
                     cachedData.updateValue(serverMatch, forKey: usedId)
-                    CoreDataManager.instance.updateObject(serverMatch, existID: cachedMatch.objectID)
+                    CoreDataManager.instance.updateObject(serverMatch, existID: serverMatch.objectID)
                 }
                 else {
                     cachedData.updateValue(serverMatch, forKey: usedId)
@@ -78,8 +87,10 @@ class CacheLoad
             }
             
         })
-      
+        serverData = [:]
+        cachedData = [:]
         CoreDataManager.instance.saveContext()
+       
        
         
         mainDelegate?.syncCompleted()

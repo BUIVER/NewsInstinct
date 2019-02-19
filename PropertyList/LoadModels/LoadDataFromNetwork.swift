@@ -7,20 +7,17 @@
 //
 
 import UIKit
-import CoreData
 
 protocol DataLoadDelegate: class {
     func dataLoadCompleted(data: [News])
-    func imageLoadCompleted(image: UIImage, index: Int)
 }
 
-class NetworkLoad
+class LoadDataFromNetwork
 {
     weak var delegate : DataLoadDelegate?
     let urlSession = URLSession()
-    let imageSession = URLSession.shared
     
-//    let cachedHandler = URLCache(memoryCapacity: 100 * 1024 * 1024, diskCapacity: 0, diskPath: nil)
+
     var loadedImages : [URL:UIImage?] = [:]
 
     
@@ -32,7 +29,7 @@ class NetworkLoad
         
         let request = URLRequest(url: url!)
         let session = URLSession.shared
-        var fullLoadedData = [News]()
+        
         
         
         let task = session.dataTask(with: request, completionHandler: {data, response, error in
@@ -50,7 +47,7 @@ class NetworkLoad
             do
             {
                 if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [NSDictionary]{
-                    
+                    var fullLoadedData = [News]()
                     for index in 0..<json.count
                     {
                         let cluster = json[index]
@@ -62,20 +59,22 @@ class NetworkLoad
                        // debugPrint(type(of: cluster.value(forKey: "updated")))
                      
                         let updateTime = String(describing: cluster.value(forKey: "updated"))
-                    
+                     
                         let partialData = News()
+
+//                        CoreDataManager.instance.deleteObject(partialData)
                         partialData.title = title
                         partialData.id = id
                         partialData.imageUrl = imageUrl
                         partialData.subtitle = subtitle
                         partialData.updateTime = updateTime
-                       
                         fullLoadedData.append(partialData)
+                        
                         
                     }
                     DispatchQueue.main.async {
                         self.delegate?.dataLoadCompleted(data: fullLoadedData)
-                      
+                        
                     }
                     
                     
@@ -90,57 +89,6 @@ class NetworkLoad
         task.resume()
  
     }
-    
-    func loadImage(url: URL, index: Int)
-       
-    {
-      
-        if let value = loadedImages[url]  {
-            if let gottenImage = value {
-                DispatchQueue.main.async {
-                    self.delegate?.imageLoadCompleted(image: gottenImage, index: index)
-                }
-            }
-            return
-        }
-        
-        loadedImages.updateValue(nil, forKey: url)
-        
-        let imageDownloadTask = imageSession.dataTask(with: url, completionHandler: { [weak self] data, response, error in
-            guard error == nil else
-            {
-                self?.loadedImages.removeValue(forKey: url)
-                debugPrint("error")
-                return
-            }
-            guard let data = data else {
-                self?.loadedImages.removeValue(forKey: url)
-                debugPrint("data")
-                return
-            }
-            
-            let gottenImage = UIImage(data: data)
-            self?.loadedImages.updateValue(gottenImage, forKey: url)
-            DispatchQueue.main.async {
-                self?.delegate?.imageLoadCompleted(image: gottenImage!, index: index)
-            }
-            
-        })
-        
-//        cachedHandler.getCachedResponse(for: imageDownloadTask, completionHandler: {[weak self] response in
-//            if let cachedResponse = response {
-//                self?.cachedHandler.storeCachedResponse(cachedResponse, for: imageDownloadTask)
-//            }
-//            if let imageData = response?.data, let gottenImage = UIImage(data: imageData) {
-//                self?.loadedImages.updateValue(gottenImage, forKey: url)
-//                DispatchQueue.main.async {
-//                    self?.delegate?.imageLoadCompleted(image: gottenImage, index: index)
-//                }
-//            }
-//        })
-        
-        imageDownloadTask.resume()
-        
-    }
+   
    
 }
