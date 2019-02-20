@@ -13,8 +13,9 @@ import CoreData
 @objc(News)
 public class News: NSManagedObject {
     convenience init() {
-        let entity = NSEntityDescription.entity(forEntityName: "News", in: CoreDataManager.instance.managedObjectContext)
-        self.init(entity: entity!, insertInto: nil)
+//        let entity = NSEntityDescription.entity(forEntityName: "News", in: CoreDataManager.instance.managedObjectContext)
+//        self.init(entity: entity!, insertInto: nil)
+        self.init(context: CoreDataManager.instance.managedObjectContext)
         
       
     }

@@ -9,7 +9,7 @@
 import UIKit
 
 protocol DataLoadDelegate: class {
-    func dataLoadCompleted(data: [News])
+    func dataLoadCompleted(data: [NetworkLoadStructure])
 }
 
 class LoadDataFromNetwork
@@ -47,7 +47,7 @@ class LoadDataFromNetwork
             do
             {
                 if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [NSDictionary]{
-                    var fullLoadedData = [News]()
+                    var fullLoadedData = [NetworkLoadStructure]()
                     for index in 0..<json.count
                     {
                         let cluster = json[index]
@@ -60,14 +60,10 @@ class LoadDataFromNetwork
                      
                         let updateTime = String(describing: cluster.value(forKey: "updated"))
                      
-                        let partialData = News()
+                        let partialData = NetworkLoadStructure(title: title, id: id, subtitle: subtitle, imageUrl: imageUrl, updateTime: updateTime)
 
 //                        CoreDataManager.instance.deleteObject(partialData)
-                        partialData.title = title
-                        partialData.id = id
-                        partialData.imageUrl = imageUrl
-                        partialData.subtitle = subtitle
-                        partialData.updateTime = updateTime
+                        
                         fullLoadedData.append(partialData)
                         
                         

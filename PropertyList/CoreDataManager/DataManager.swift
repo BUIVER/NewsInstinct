@@ -65,39 +65,34 @@ class CoreDataManager{
     
     func deleteObject(_ object: NSManagedObject) {
         self.managedObjectContext.delete(object)
-        saveContext()
-       
     }
     
     func insertObject(_ object: NSManagedObject) {
         self.managedObjectContext.insert(object)
-        saveContext()
-        
     }
-    func updateObject(_ object: NSManagedObject, existID: NSManagedObjectID) {
-        if let newDataId = object.value(forKey: "id") as? String{
-        
-        do {
-            let objectsSet = try managedObjectContext.fetch(fetchRequest)
-            var index = 0
-            while (newDataId != objectsSet[index].id)
-            {
-                debugPrint(objectsSet[index].objectID)
-                debugPrint("")
-                index += 1
+    func updateObject(_ object: NetworkLoadStructure, existObject: News) {
+            if (existObject.updateTime != object.updateTime){
+                if (existObject.title != object.title)
+                {
+                    existObject.title = object.title
+                }
+            
+                if (existObject.subtitle != object.subtitle)
+                {
+                    existObject.subtitle = object.subtitle
+                }
+                if (existObject.id != object.id)
+                {
+                    existObject.id = object.id
+                }
+                if (existObject.imageUrl != object.imageUrl)
+                {
+                    existObject.imageUrl = object.imageUrl
+                }
+                    existObject.updateTime = object.updateTime
+                
+          
             }
-            objectsSet[index].setValue(object.value(forKey: "title"), forKey: "title")
-            objectsSet[index].setValue(object.value(forKey: "subtitle"), forKey: "subtitle")
-            objectsSet[index].setValue(object.value(forKey: "updateTime"), forKey: "updateTime")
-            objectsSet[index].setValue(object.value(forKey: "imageUrl"), forKey: "imageUrl")
-            debugPrint(objectsSet[index].objectID)
-            debugPrint(managedObjectContext.updatedObjects)
-            debugPrint(self.managedObjectContext.insertedObjects)
-            saveContext()
-        } catch {
-            let nserror = error as NSError
-            NSLog("error \(nserror), \(nserror.userInfo)")
-        }
-        }
+       
     }
 }

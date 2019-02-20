@@ -21,9 +21,9 @@ class ViewController: UIViewController, UITableViewDelegate{
     var networkLoad = LoadDataFromNetwork()
     var loadImage: ImageLoader!
     var idList: [Int32]!
-    let cachedHandler = URLCache(memoryCapacity: 100 * 1024 * 1024, diskCapacity: 0, diskPath: nil)
+    
    
-    var dataTasksLists: [Int: URLSessionDataTask] = [:]
+    
     @IBOutlet weak var table: UITableView!
     @IBAction func reload(_ sender: Any) {
     
@@ -34,7 +34,7 @@ class ViewController: UIViewController, UITableViewDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         localLoad = CacheLoad(delegate: self)
-        loadImage = ImageLoader(cachedHandler: cachedHandler)
+        loadImage = ImageLoader()
         localLoad.mainDelegate = self
         networkLoad.delegate = self
         localLoad.loadData()
@@ -58,19 +58,9 @@ extension ViewController : CachedLoadDelegate
 
 extension ViewController: DataLoadDelegate
 {
-    func dataLoadCompleted(data: [News]) {
+    func dataLoadCompleted(data: [NetworkLoadStructure]) {
         
         localLoad.startSync(data: data)
-    }
-    
-    
-}
-extension ViewController: LoadImageDelegate
-{
-    func imageLoadCompleted(imageSession: URLSessionDataTask, index: Int) {
-        dataTasksLists.updateValue(imageSession, forKey: index)
-        let indexPath = IndexPath(row: index, section: 0)
-        table.reloadRows(at: [indexPath], with: .automatic)
     }
     
     
@@ -101,20 +91,13 @@ extension ViewController : UITableViewDataSource
         
         cell.key.text = cellValue.title
         cell.value.text = cellValue.subtitle
-
-//        if let data = cellValue.image as Data?, let image = UIImage(data: data) {
-//            cell.images.image = image
-//        } else
-     /*   if let dataTask = dataTasksLists[index]{
-        self.cachedHandler.getCachedResponse(for: dataTask, completionHandler: {response in
-            if let image = UIImage(data: response?.data as! Data){
-               cell.images.image = image
-            }
-            })
+        if let url = URL(string: data.imageUrl ?? ""){
+        loadImage.loadImage(url: url) {image in
+            
+            cell.images.image = image
+            
         }
-        else if let imageString = cellValue.imageUrl, let url = URL(string: imageString) {
-                loadImage.loadImage(url: url, index: index)
-        }*/
+        }
     }
 }
 
