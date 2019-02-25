@@ -22,8 +22,6 @@ class ViewController: UIViewController, UITableViewDelegate{
     var loadImage: ImageLoader!
     var idList: [Int32]!
     
-   
-    
     @IBOutlet weak var table: UITableView!
     @IBAction func reload(_ sender: Any) {
     
@@ -91,12 +89,19 @@ extension ViewController : UITableViewDataSource
         
         cell.key.text = cellValue.title
         cell.value.text = cellValue.subtitle
-        if let url = URL(string: data.imageUrl ?? ""){
-        loadImage.loadImage(url: url) {image in
-            
-            cell.images.image = image
-            
+        if let url = URL(string: cellValue.imageUrl ?? "") {
+            loadImage.loadImage(url: url) {image in
+                
+                
+                    if (self.table.indexPathsForVisibleRows?.contains(IndexPath(row: index, section: 0)) ?? false){
+                    cell.images.image = image
+                
+                
+                
+                }
+               
         }
+            
         }
     }
 }

@@ -67,9 +67,15 @@ class CoreDataManager{
         self.managedObjectContext.delete(object)
     }
     
-    func insertObject(_ object: NSManagedObject) {
-        self.managedObjectContext.insert(object)
+    func insertObject(_ serverMatch: NetworkLoadStructure) {
+        let insertedObject = News()
+        insertedObject.id = serverMatch.id
+        insertedObject.title = serverMatch.title
+        insertedObject.subtitle = serverMatch.subtitle
+        insertedObject.imageUrl = serverMatch.imageUrl
+        insertedObject.updateTime = serverMatch.updateTime
     }
+    
     func updateObject(_ object: NetworkLoadStructure, existObject: News) {
             if (existObject.updateTime != object.updateTime){
                 if (existObject.title != object.title)

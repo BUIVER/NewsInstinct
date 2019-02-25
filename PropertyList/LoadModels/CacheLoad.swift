@@ -17,7 +17,7 @@ class CacheLoad
 {
     let fetchedResultController : NSFetchedResultsController<News>
     var mainDelegate: CachedLoadDelegate?
-    var cachedData: [String:News] = [:]
+    
    
     init(delegate: NSFetchedResultsControllerDelegate) {
         let fetchRequest: NSFetchRequest<News> = News.fetchRequest()
@@ -44,19 +44,24 @@ class CacheLoad
     func startSync(data: [NetworkLoadStructure]) {
         var serverData: [String:NetworkLoadStructure] = [:]
         let arrayedServerData = data
-        var serverIdList: Set<String> = []
-        let (cahr, idList) = loadFromLocalStorage()
+        let cachedData = loadFromLocalStorage()
         
        for index in 0..<arrayedServerData.count
         {
             
             let appendedValue = arrayedServerData[index]
-            serverIdList.insert(appendedValue.id)
             
             serverData.updateValue(appendedValue, forKey: appendedValue.id)
         }
-        var amountOfData = idList
-        amountOfData.formUnion(serverIdList)
+        
+        var amountOfData: Set<String> = []
+        cachedData.keys.forEach{key in
+            amountOfData.insert(key)
+        }
+        serverData.keys.forEach{key in
+            amountOfData.insert(key)
+        }
+        amountOfData.formUnion(serverData.keys)
         amountOfData.forEach({usedId in
             if let serverMatch = serverData[usedId]
             {
@@ -65,13 +70,8 @@ class CacheLoad
                     CoreDataManager.instance.updateObject(serverMatch, existObject: cachedObject)
                 }
                 else {
-                   // CoreDataManager.instance.insertObject(serverMatch)
-                    let insertedObject = News()
-                    insertedObject.id = serverMatch.id
-                    insertedObject.title = serverMatch.title
-                    insertedObject.subtitle = serverMatch.subtitle
-                    insertedObject.imageUrl = serverMatch.imageUrl
-                    insertedObject.updateTime = serverMatch.updateTime
+                    CoreDataManager.instance.insertObject(serverMatch)
+                    
                 }
             }
             else
@@ -82,9 +82,8 @@ class CacheLoad
             }
             
         })
-        cachedData = [:]
         CoreDataManager.instance.saveContext()
-       
+        
        
         
         mainDelegate?.syncCompleted()
@@ -92,18 +91,19 @@ class CacheLoad
     
         
     }
-    func loadFromLocalStorage() -> (data: [News], idList: Set<String>)
+    func loadFromLocalStorage() -> [String:News]
     {
-        var idList: Set<String> = []
+        var resultDict: [String:News] = [:]
+        
         if let fetchedObjects = self.fetchedResultController.fetchedObjects {
             for result in fetchedObjects {
-                idList.insert(result.id)
-                cachedData.updateValue(result, forKey: result.id)
+              
+                resultDict.updateValue(result, forKey: result.id)
             }
         
-        return (data: fetchedObjects, idList: idList)
+        return resultDict
         }
-        else {return (data: [], idList: idList)}
+        else {return [:]}
     }
 }
 
