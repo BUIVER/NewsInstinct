@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct NetworkLoadStructure {
+struct NetworkLoadStructure: Codable {
     var title: String?
     var id: String
     var subtitle: String?
     var imageUrl: String?
     var updateTime: String?
-    
+    var hasUpdated: Bool
 }
