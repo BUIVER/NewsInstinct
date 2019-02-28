@@ -74,6 +74,7 @@ class CoreDataManager{
         insertedObject.subtitle = serverMatch.subtitle
         insertedObject.imageUrl = serverMatch.imageUrl
         insertedObject.updateTime = serverMatch.updateTime
+        insertedObject.hasUpdated = false
     }
     
     func updateObject(_ object: NetworkLoadStructure, existObject: News) {

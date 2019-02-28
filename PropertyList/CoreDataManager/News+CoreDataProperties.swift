@@ -21,5 +21,6 @@ extension News {
     @NSManaged public var title: String?
     @NSManaged public var id: String
     @NSManaged public var updateTime: String?
+    @NSManaged public var hasUpdated: Bool
 
 }

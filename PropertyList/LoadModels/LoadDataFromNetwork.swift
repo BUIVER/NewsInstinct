@@ -60,7 +60,7 @@ class LoadDataFromNetwork
                      
                         let updateTime = String(describing: cluster.value(forKey: "updated"))
                      
-                        let partialData = NetworkLoadStructure(title: title, id: id, subtitle: subtitle, imageUrl: imageUrl, updateTime: updateTime)
+                        let partialData = NetworkLoadStructure(title: title, id: id, subtitle: subtitle, imageUrl: imageUrl, updateTime: updateTime, hasUpdated: false)
 
 //                        CoreDataManager.instance.deleteObject(partialData)
                         
